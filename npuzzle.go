@@ -208,7 +208,7 @@ func find_food(board grid) {
             }
             visited[repr1] = true
 
-            var k = board1.manhattan()
+            var k = board1.manhattan() + node0.level
             var node1 = newNode(node0, shift.move, board1)
             // debug("  ", node1.level, k, repr1)
             heap.Push(&costs, &cost{priority:k, node:node1})
@@ -220,11 +220,14 @@ func find_food(board grid) {
         return
     }
 
+    // debug(len(visited))
     var moves = []string{}
     for solution.parent != nil {
         moves = append(moves, solution.move)
+        // debug(solution.level, solution.board.repr())
         solution = solution.parent
     }
+    // debug(solution.level, solution.board.repr())
 
     // reverse moves
     var i, d = 0, len(moves)
@@ -240,16 +243,7 @@ func find_food(board grid) {
 }
 
 func define_goal() {
-    var i, j int
-    var board = make(grid, dimension)
-    for j = 0; j < dimension; j++ {
-        board[j] = make([]int, dimension)
-
-        for i = 0; i < dimension; i++ {
-            var k = j * dimension + i
-            board[j][i] = k
-        }
-    }
+    var board = grid{{0, 1, 2}, {3, 4, 5}, {6, 7, 8},}
     goal = board.repr()
 }
 
