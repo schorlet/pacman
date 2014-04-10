@@ -85,16 +85,12 @@ func (self grid) score() int {
     score = self.eval(point{2,0}, point{1,1}, point{0,2})
     return score
 }
-func (self grid) game_over() bool {
-    var score = self.score()
-    return score != 0
-}
 
 func min_food(board grid, level int) int {
     var moves = board.moves()
-    var stop = board.game_over()
-    if stop || level == 0 || len(moves) == 0 {
-        return board.score()
+    var score = board.score()
+    if score != 0 || level == 0 || len(moves) == 0 {
+        return score * (level + 1)
     }
 
     var best_score = math.MaxInt32
@@ -102,7 +98,7 @@ func min_food(board grid, level int) int {
         var board0 = board.copy()
         board0[move.y][move.x] = opponent
 
-        var score, _ = max_food(board0, level - 1)
+        score, _ = max_food(board0, level - 1)
         // debug(fmt.Sprintf("%q %s %s %-5d %s", opponent,
                 // strings.Repeat("   ", 9 - level),
                 // move, score, board0.repr()))
@@ -115,9 +111,9 @@ func min_food(board grid, level int) int {
 }
 func max_food(board grid, level int) (int, point) {
     var moves = board.moves()
-    var stop = board.game_over()
-    if stop || level == 0 || len(moves) == 0 {
-        return board.score(), point{-1,-1}
+    var score = board.score()
+    if score != 0 || level == 0 || len(moves) == 0 {
+        return score * (level + 1), point{-1,-1}
     }
 
     var best_score = math.MinInt32
@@ -126,7 +122,7 @@ func max_food(board grid, level int) (int, point) {
         var board0 = board.copy()
         board0[move.y][move.x] = player
 
-        var score = min_food(board0, level - 1)
+        score = min_food(board0, level - 1)
         // debug(fmt.Sprintf("%q %s %s %-5d %s", player,
                 // strings.Repeat("   ", 9 - level),
                 // move, score, board0.repr()))
