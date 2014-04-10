@@ -86,7 +86,7 @@ func (self grid) score() int {
     return score
 }
 
-func min_food(board grid, level int) int {
+func min_food(board grid, level, alpha, beta int) int {
     var moves = board.moves()
     var score = board.score()
     if score != 0 || level == 0 || len(moves) == 0 {
@@ -98,7 +98,7 @@ func min_food(board grid, level int) int {
         var board0 = board.copy()
         board0[move.y][move.x] = opponent
 
-        score, _ = max_food(board0, level - 1)
+        score, _ = max_food(board0, level - 1, alpha, beta)
         // debug(fmt.Sprintf("%q %s %s %-5d %s", opponent,
                 // strings.Repeat("   ", 9 - level),
                 // move, score, board0.repr()))
@@ -106,10 +106,16 @@ func min_food(board grid, level int) int {
         if score < best_score {
             best_score = score
         }
+        if score < beta {
+            beta = score
+            if beta <= alpha {
+                break
+            }
+        }
     }
     return best_score
 }
-func max_food(board grid, level int) (int, point) {
+func max_food(board grid, level, alpha, beta int) (int, point) {
     var moves = board.moves()
     var score = board.score()
     if score != 0 || level == 0 || len(moves) == 0 {
@@ -122,7 +128,7 @@ func max_food(board grid, level int) (int, point) {
         var board0 = board.copy()
         board0[move.y][move.x] = player
 
-        score = min_food(board0, level - 1)
+        score = min_food(board0, level - 1, alpha, beta)
         // debug(fmt.Sprintf("%q %s %s %-5d %s", player,
                 // strings.Repeat("   ", 9 - level),
                 // move, score, board0.repr()))
@@ -131,12 +137,18 @@ func max_food(board grid, level int) (int, point) {
             best_move = move
             best_score = score
         }
+        if score > alpha {
+            alpha = score
+            if beta <= alpha {
+                break
+            }
+        }
     }
     return best_score, best_move
 }
 func find_food(board grid, level int) point {
-    var _, move = max_food(board, level)
-    // var score, move = max_food(board, level)
+    var _, move = max_food(board, level, math.MinInt32, math.MaxInt32)
+    // var score, move = max_food(board, level, math.MinInt32, math.MaxInt32)
     // debug(fmt.Sprintf("%q", player), move, score)
     return move
 }
