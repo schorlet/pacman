@@ -196,16 +196,21 @@ func play() {
 }
 
 func main() {
-    play()
-    // test()
+    // play()
+    test()
 }
 
 func test() {
+    ordered_moves = [9]point{
+        point{1,1},
+        point{0,0}, point{0,2}, point{2,0}, point{2,2},
+        point{1,0}, point{2,1}, point{1,2}, point{0,1},
+    }
     var board = grid{{'O', '_', '_'}, {'_', 'X', 'X'}, {'_', '_', '_'},}
     player, opponent = 'O', 'X'
     var level = 6
 
-    for ;level >= 0; level-- {
+    for ;level > 0; level-- {
         var move = find_food(board, level)
         board[move.y][move.x] = player
         debug_board(board)
@@ -213,6 +218,9 @@ func test() {
             player, opponent = 'O', 'X'
         } else {
             player, opponent = 'X', 'O'
+        }
+        if board.score() != 0 {
+            break
         }
     }
 }
