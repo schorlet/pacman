@@ -147,18 +147,18 @@ func find_star(board table) int {
     }
 
     if solution == nil {
-        debug("No solution possible")
+        // debug("No solution possible")
         return -1
     }
-    // return solution.operations
-    debug(solution)
-    debug(len(visited))
-    for solution.parent != nil {
-        board[solution.point.y][solution.point.x] = '*'
-        solution = solution.parent
-    }
-    debug_board(board)
     return solution.operations
+    // debug(solution)
+    // debug(len(visited))
+    // for solution.parent != nil {
+        // board[solution.point.y][solution.point.x] = '*'
+        // solution = solution.parent
+    // }
+    // debug_board(board)
+    // return solution.operations
 }
 
 func main() {
@@ -169,7 +169,10 @@ func main() {
 
     for j = 0; j < height; j++ {
         var line string
-        fmt.Scanf("%s", &line)
+        var _, err = fmt.Scanf("%s", &line)
+        if err != nil {
+            fmt.Scanf("%s", &line)
+        }
         board[j] = make([]rune, width)
 
         for i = 0; i < width; i++ {
