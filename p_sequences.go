@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "math"
 import "os"
 
 func main() {
@@ -27,7 +28,8 @@ func main() {
     // }
     // fmt.Fprintln(os.Stderr)
     // debug("products", len(products))
-    fmt.Println(len(products))
+    // fmt.Println(len(products))
+    fmt.Println(products)
     // 2 2: 3
     // 3 4: 4*4+6=22
     // 3 3: 3*3+2=11
@@ -40,7 +42,7 @@ func debug(args ...interface{}) {
     fmt.Fprintln(os.Stderr, args)
 }
 
-func Product(p int, args ...[]int) [][]int {
+func Product(p int, args ...[]int) uint64 {
     pools := args
     npools := len(pools)
     indices := make([]int, npools)
@@ -48,12 +50,14 @@ func Product(p int, args ...[]int) [][]int {
     result := make([]int, npools)
     for i := range result {
         if len(pools[i]) == 0 {
-            return nil
+            return 0
         }
         result[i] = pools[i][0]
     }
 
-    results := [][]int{result}
+    // results := [][]int{result}
+    var results uint64 = 1
+    var f = uint64(math.Pow10(9) + 7)
 
     for {
         i := npools - 1
@@ -81,15 +85,16 @@ func Product(p int, args ...[]int) [][]int {
         }
 
         if i < 0 {
-            return results
+            return results % f
         }
 
-        newresult := make([]int, npools)
-        copy(newresult, result)
-        results = append(results, newresult)
+        // newresult := make([]int, npools)
+        // copy(newresult, result)
+        // results = append(results, newresult)
+        results += 1
     }
 
-    return nil
+    return 0
 }
 
 func Range(start, stop int) []int {
