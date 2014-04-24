@@ -55,46 +55,33 @@ func Product(p int, args ...[]int) uint64 {
         result[i] = pools[i][0]
     }
 
-    // results := [][]int{result}
     var results uint64 = 1
     var f = uint64(math.Pow10(9) + 7)
 
-    for {
-        i := npools - 1
-        for ; i >= 0; i -= 1 {
-            pool := pools[i]
-            indices[i] += 1
+    i := npools - 1
+    for ; i >= 0; i -= 1 {
+        pool := pools[i]
+        indices[i] += 1
 
-            if indices[i] == len(pool) {
-                // debug("i:", i, "indices:", indices, result, ";")
+        if indices[i] == len(pool) {
+            // debug("i:", i, "indices:", indices, result, ";")
+            indices[i] = 0
+            result[i] = pool[0]
+
+        } else {
+            result[i] = pool[indices[i]]
+            // debug("i:", i, "indices:", indices, result)
+            if i > 0 && result[i] * result[i-1] > p {
                 indices[i] = 0
                 result[i] = pool[0]
-
+                continue
             } else {
-                result[i] = pool[indices[i]]
-                // debug("i:", i, "indices:", indices, result)
-
-                if i > 0 && result[i] * result[i-1] > p {
-                    indices[i] = 0
-                    result[i] = pool[0]
-                    continue
-                } else {
-                    break
-                }
+                results++
+                i = npools
             }
         }
-
-        if i < 0 {
-            return results % f
-        }
-
-        // newresult := make([]int, npools)
-        // copy(newresult, result)
-        // results = append(results, newresult)
-        results += 1
     }
-
-    return 0
+    return results % f
 }
 
 func Range(start, stop int) []int {
