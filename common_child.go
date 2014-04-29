@@ -29,10 +29,31 @@ func lcs(a, b string) int {
         }
     }
 
-    // for i = 0; i < m; i++ {
-        // debug(C[i])
-    // }
+    for i = 0; i < m; i++ {
+        debug(C[i])
+    }
 
+    var s = make([]uint8, C[m-1][n-1])
+    var k int
+
+    for i = m - 1; i > 0; {
+        for j = n - 1; i > 0 && j > 0; {
+            debug(i, j)
+
+            if C[i][j] == C[i-1][j] {
+                i -= 1
+            } else if C[i][j] == C[i][j-1] {
+                j -= 1
+            } else {
+                i -= 1
+                j -= 1
+                s[k] = a[i]
+                k += 1
+            }
+        }
+    }
+    reverse(s)
+    debug(fmt.Sprintf("%s", s))
     return C[m-1][n-1]
 }
 
@@ -41,6 +62,13 @@ func max(a, b int) int {
         return a
     }
     return b
+}
+
+func reverse(list []uint8) {
+    var l = len(list)
+    for i := 0; i < l/2; i++ {
+        list[i], list[l-1-i] = list[l-1-i], list[i]
+    }
 }
 
 func debug(args ...interface{}) {
