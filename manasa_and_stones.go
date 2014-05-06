@@ -36,8 +36,7 @@ func last_stones(n, a, b int) {
     // debug(stones[0])
     for i = 1; i < n-1; i++ {
         stones[i] = make([]int, 2+i)
-        stones[i][0] = stones[i-1][0] + a
-        for j = 1; j < 2+i-1; j++ {
+        for j = 0; j < 2+i-1; j++ {
             stones[i][j] = stones[i-1][j] + a
         }
         stones[i][j] = stones[i-1][j-1] + b
