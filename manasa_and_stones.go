@@ -30,6 +30,10 @@ func main() {
 }
 
 func last_stones(n, a, b int) {
+    if a == b {
+        fmt.Println(a * (n - 1))
+        return
+    }
     var i, j int
     var stones = make([][]int, n-1)
     stones[0] = []int{a, b}
