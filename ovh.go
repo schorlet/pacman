@@ -50,7 +50,7 @@ func main() {
 
         } else if space || value != value0 {
             count = count % len(keypad[value])
-            // debug(value, value, count, keypad[value][count])
+            // debug(value, count, keypad[value][count])
             buffer.WriteByte(keypad[value][count])
 
             space = false
@@ -61,7 +61,7 @@ func main() {
         }
     }
 
-    fmt.Printf("%s\n", buffer.String())
+    fmt.Printf("%q\n", buffer.String())
 }
 
 func debug(args ...interface{}) {
