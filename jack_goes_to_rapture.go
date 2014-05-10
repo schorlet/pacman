@@ -7,33 +7,55 @@ import "os"
 
 type road struct {
     src, dest int
-    fare int64
+    fare      int64
 }
 type roads []road
 
+type city struct {
+    id    int
+    cost  int64
+    index int
+}
+type cities []city
+
 func (self road) String() string {
-    return fmt.Sprintf("%d:%d", self.dest, self.fare)
+    return fmt.Sprintf("%d:%d=%d", self.src, self.dest, self.fare)
+}
+func (self city) String() string {
+    return fmt.Sprintf("%d:%d (%d)", self.id, self.cost, self.index)
+}
+func newCity(id int, cost int64) city {
+    return city{id: id, cost: cost}
 }
 
-func (pq roads) Len() int {
+func (pq cities) Len() int {
     return len(pq)
 }
-func (pq roads) Less(i, j int) bool {
-    return pq[i].fare < pq[j].fare
+func (pq cities) Less(i, j int) bool {
+    return pq[i].cost < pq[j].cost
 }
-func (pq roads) Swap(i, j int) {
+func (pq cities) Swap(i, j int) {
     pq[i], pq[j] = pq[j], pq[i]
+    pq[i].index = i
+    pq[j].index = j
 }
-func (pq *roads) Push(x interface{}) {
-    var item = x.(road)
+func (pq *cities) Push(x interface{}) {
+    var n = len(*pq)
+    var item = x.(city)
+    item.index = n
     *pq = append(*pq, item)
 }
-func (pq *roads) Pop() interface{} {
+func (pq *cities) Pop() interface{} {
     var old = *pq
     var n = len(old)
     var item = old[n-1]
+    item.index = -1 // for safety
     *pq = old[0 : n-1]
     return item
+}
+func (pq *cities) update(item city) {
+    heap.Remove(pq, item.index)
+    heap.Push(pq, item)
 }
 
 func main() {
@@ -54,33 +76,55 @@ func main() {
     // for src, dests := range sources {
         // debug(src, dests)
     // }
-    find_city(n, sources)
+    find_city(1, n, sources)
 }
 
-func find_city(goal int, sources map[int]roads) {
-    var nodes = roads{}
+// kind of dijkstra algo (without init)
+func find_city(start, goal int, sources map[int]roads) {
+    var nodes = cities{}
     heap.Init(&nodes)
-    heap.Push(&nodes, road{0, 1, 0})
+    heap.Push(&nodes, newCity(1, 0))
+
+    // visited cities
     var visited = make(map[int]bool)
 
-    for nodes.Len() > 0 {
-        var road0 = heap.Pop(&nodes).(road)
-        visited[road0.src] = true
-        debug(road0)
+    // cumulated costs
+    var costs = make(map[int]int64)
 
-        if road0.dest == goal {
-            fmt.Println(road0.fare)
+    for nodes.Len() > 0 {
+        var city0 = heap.Pop(&nodes).(city)
+        visited[city0.id] = true
+
+        if city0.id == goal {
+            fmt.Println(city0.cost)
             return
         }
 
-        var dests = sources[road0.dest]
-        for _, road1 := range dests {
-            if visited[road1.src] {
+        for _, road0 := range sources[city0.id] {
+            if visited[road0.dest] {
                 continue
             }
-            var cost = road0.fare + max(0, road1.fare - road0.fare)
-            var road2 = road{road1.src, road1.dest, cost}
-            heap.Push(&nodes, road2)
+            var cost0, ok = costs[road0.dest]
+            var cost = city0.cost + max(0, road0.fare-city0.cost)
+            // var cost = city0.cost + road0.fare
+
+            if cost < cost0 || !ok {
+                costs[road0.dest] = cost
+                if !ok {
+                    // add new city with cost
+                    var next = newCity(road0.dest, cost)
+                    heap.Push(&nodes, next)
+                } else {
+                    // update city cost
+                    for _, city1 := range nodes {
+                        if city1.id == road0.dest {
+                            var next = city{city1.id, cost, city1.index}
+                            nodes.update(next)
+                            break
+                        }
+                    }
+                }
+            }
         }
     }
     fmt.Println("NO PATH EXISTS")
