@@ -83,10 +83,11 @@ func main() {
 func find_city(start, goal int, sources map[int]roads) {
     var nodes = cities{}
     heap.Init(&nodes)
-    heap.Push(&nodes, newCity(1, 0))
+    heap.Push(&nodes, newCity(start, 0))
 
     // cumulated costs
     var costs = make(map[int]int64)
+    var previous = make(map[int]int)
 
     for nodes.Len() > 0 {
         var city0 = heap.Pop(&nodes).(*city)
@@ -94,6 +95,13 @@ func find_city(start, goal int, sources map[int]roads) {
 
         if city0.id == goal {
             fmt.Println(city0.cost)
+            var path []int
+            for goal != start {
+                path = append(path, goal)
+                goal = previous[goal]
+            }
+            path = append(path, start)
+            debug(path)
             return
         }
 
@@ -104,22 +112,21 @@ func find_city(start, goal int, sources map[int]roads) {
 
             if cost < cost0 || !ok {
                 costs[road0.dest] = cost
-                var next = newCity(road0.dest, cost)
-                heap.Push(&nodes, next)
-                // if !ok {
-                    // /// add new city with cost
-                    // var next = newCity(road0.dest, cost)
-                    // heap.Push(&nodes, next)
-                // } else {
-                    // /// update city cost
-                    // for _, city1 := range nodes {
-                        // if city1.id == road0.dest {
-                            // city1.cost = cost
-                            // nodes.update(city1)
-                            // break
-                        // }
-                    // }
-                // }
+                previous[road0.dest] = road0.src
+                if !ok {
+                    /// add new city with cost
+                    var next = newCity(road0.dest, cost)
+                    heap.Push(&nodes, next)
+                } else {
+                    /// update city cost
+                    for _, city1 := range nodes {
+                        if city1.id == road0.dest {
+                            city1.cost = cost
+                            nodes.update(city1)
+                            break
+                        }
+                    }
+                }
             }
         }
     }
