@@ -16,7 +16,7 @@ type city struct {
     cost  int64
     index int
 }
-type cities []city
+type cities []*city
 
 func (self road) String() string {
     return fmt.Sprintf("%d:%d=%d", self.src, self.dest, self.fare)
@@ -24,8 +24,8 @@ func (self road) String() string {
 func (self city) String() string {
     return fmt.Sprintf("%d:%d (%d)", self.id, self.cost, self.index)
 }
-func newCity(id int, cost int64) city {
-    return city{id: id, cost: cost}
+func newCity(id int, cost int64) *city {
+    return &city{id: id, cost: cost}
 }
 
 func (pq cities) Len() int {
@@ -41,7 +41,7 @@ func (pq cities) Swap(i, j int) {
 }
 func (pq *cities) Push(x interface{}) {
     var n = len(*pq)
-    var item = x.(city)
+    var item = x.(*city)
     item.index = n
     *pq = append(*pq, item)
 }
@@ -53,7 +53,7 @@ func (pq *cities) Pop() interface{} {
     *pq = old[0 : n-1]
     return item
 }
-func (pq *cities) update(item city) {
+func (pq *cities) update(item *city) {
     heap.Remove(pq, item.index)
     heap.Push(pq, item)
 }
@@ -85,15 +85,12 @@ func find_city(start, goal int, sources map[int]roads) {
     heap.Init(&nodes)
     heap.Push(&nodes, newCity(1, 0))
 
-    // visited cities
-    var visited = make(map[int]bool)
-
     // cumulated costs
     var costs = make(map[int]int64)
 
     for nodes.Len() > 0 {
-        var city0 = heap.Pop(&nodes).(city)
-        visited[city0.id] = true
+        var city0 = heap.Pop(&nodes).(*city)
+        // debug(city0)
 
         if city0.id == goal {
             fmt.Println(city0.cost)
@@ -101,29 +98,28 @@ func find_city(start, goal int, sources map[int]roads) {
         }
 
         for _, road0 := range sources[city0.id] {
-            if visited[road0.dest] {
-                continue
-            }
             var cost0, ok = costs[road0.dest]
             var cost = city0.cost + max(0, road0.fare-city0.cost)
             // var cost = city0.cost + road0.fare
 
             if cost < cost0 || !ok {
                 costs[road0.dest] = cost
-                if !ok {
-                    // add new city with cost
-                    var next = newCity(road0.dest, cost)
-                    heap.Push(&nodes, next)
-                } else {
-                    // update city cost
-                    for _, city1 := range nodes {
-                        if city1.id == road0.dest {
-                            var next = city{city1.id, cost, city1.index}
-                            nodes.update(next)
-                            break
-                        }
-                    }
-                }
+                var next = newCity(road0.dest, cost)
+                heap.Push(&nodes, next)
+                // if !ok {
+                    // /// add new city with cost
+                    // var next = newCity(road0.dest, cost)
+                    // heap.Push(&nodes, next)
+                // } else {
+                    // /// update city cost
+                    // for _, city1 := range nodes {
+                        // if city1.id == road0.dest {
+                            // city1.cost = cost
+                            // nodes.update(city1)
+                            // break
+                        // }
+                    // }
+                // }
             }
         }
     }
