@@ -107,8 +107,8 @@ func find_city(start, goal int, sources map[int]roads) {
 
         for _, road0 := range sources[city0.id] {
             var cost0, ok = costs[road0.dest]
-            var cost = city0.cost + max(0, road0.fare-city0.cost)
-            // var cost = city0.cost + road0.fare
+            // var cost = city0.cost + max(0, road0.fare-city0.cost)
+            var cost = city0.cost + road0.fare
 
             if cost < cost0 || !ok {
                 costs[road0.dest] = cost
