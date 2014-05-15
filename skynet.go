@@ -37,8 +37,12 @@ func main() {
 
     for {
         var agent int
-        fmt.Scanf("%d", &agent)
-        bfs(agent, exits)
+        var _, err = fmt.Scanf("%d", &agent)
+        if err == nil {
+            bfs(agent, exits)
+        } else {
+            break
+        }
     }
 }
 
@@ -46,13 +50,14 @@ func bfs(agent int, exits map[int]bool) {
     var queue = edges{edge{agent, agent}}
     var visited = make(map[edge]bool)
 
-    for {
+    for len(queue) > 0 {
         var link = queue[0]
         queue = queue[1:]
         visited[link] = true
         // debug(link)
 
         if exits[link.dst] {
+            remove(link)
             fmt.Println(link)
             break
         }
@@ -64,6 +69,16 @@ func bfs(agent int, exits map[int]bool) {
             queue = append(queue, next)
         }
     }
+}
+
+func remove(link edge) {
+    var links = edges{}
+    for _, link0 := range nodes[link.src] {
+        if link != link0 {
+            links = append(links, link0)
+        }
+    }
+    nodes[link.src] = links
 }
 
 func debug(args ...interface{}) {
