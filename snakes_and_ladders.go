@@ -33,7 +33,7 @@ func main() {
                 if index + j < 0 || index + j >= n {
                     continue
                 } else if counter[index + j] > 0 &&
-                        counter[index + j] < count + 1 {
+                        counter[index + j] <= count + 1 {
                     continue
                 }
                 queue = append(queue, index + j)
@@ -48,17 +48,12 @@ func main() {
             if index + j < 0 || index + j >= n {
                 continue
             } else if counter[index + j] > 0 &&
-                    counter[index + j] < count + 1 {
+                    counter[index + j] <= count + 1 {
                 continue
             }
             queue = append(queue, index + j)
             counter[index + j] = count + 1
         }
-
-        // debug(index)
-        // debug(counter)
-        // debug(queue)
-        // debug()
     }
 
 
