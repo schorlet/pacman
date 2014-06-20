@@ -28,7 +28,7 @@ func partitions(n int) {
         nums[k] -= 1
         rem += 1
 
-        // uncomment and get unique permutations
+        // uncomment and get unique combinations
         // for rem > nums[k] {
             // nums[k+1] = nums[k]
             // rem -= nums[k]
