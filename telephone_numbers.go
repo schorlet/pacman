@@ -6,7 +6,9 @@ func main() {
     var n int
     fmt.Scanln(&n)
 
-    var trie = make(map[rune]interface{})
+    type node map[rune]interface{}
+    var trie = make(node)
+
     var total int
 
     for i := 0; i < n; i++ {
@@ -16,9 +18,9 @@ func main() {
         var root = trie
         for _, c := range line {
             if sub, ok := root[c]; ok {
-                root = sub.(map[rune]interface{})
+                root = sub.(node)
             } else {
-                var nod = make(map[rune]interface{})
+                var nod = make(node)
                 root[c] = nod
                 root = nod
                 total += 1

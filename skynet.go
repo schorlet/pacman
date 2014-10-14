@@ -39,14 +39,14 @@ func main() {
         var agent int
         var _, err = fmt.Scanf("%d", &agent)
         if err == nil {
-            bfs(agent, exits)
+            breadth_fs(agent, exits)
         } else {
             break
         }
     }
 }
 
-func bfs(agent int, exits map[int]bool) {
+func breadth_fs(agent int, exits map[int]bool) {
     var queue = edges{edge{agent, agent}}
     var visited = make(map[edge]bool)
 
