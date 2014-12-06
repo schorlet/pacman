@@ -18,7 +18,7 @@ func main() {
 
     var dist int
     for dwarf, _ := range dwarfs {
-        dist = max(dist, 1 + count_influences(dwarf))
+        dist = max(dist, 1+count_influences(dwarf))
     }
 
     fmt.Println(dist)
@@ -32,7 +32,7 @@ func count_influences(dwarf int) int {
 
     var others = dwarfs[dwarf]
     for _, other := range others {
-        dist = max(dist, 1 + count_influences(other))
+        dist = max(dist, 1+count_influences(other))
     }
 
     influences[dwarf] = dist
