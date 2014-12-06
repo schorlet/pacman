@@ -132,6 +132,7 @@ func print_best_path(departure, arrival string) {
 
     for pq.Len() > 0 {
         var item = heap.Pop(&pq).(*StopItem)
+        delete(cache, item.stop)
 
         parents[item.stop] = item.parent
         if item.stop == arrival {
@@ -150,7 +151,8 @@ func print_best_path(departure, arrival string) {
                     pq.update(next, item.stop, dist)
                 }
             } else {
-                next = &StopItem{stop: dest,
+                next = &StopItem{
+                    stop:   dest,
                     parent: item.stop,
                     dist:   dist}
                 heap.Push(&pq, next)
@@ -162,8 +164,9 @@ func print_best_path(departure, arrival string) {
     delete(parents, departure)
     if parent, ok := parents[arrival]; ok {
         var path = []string{arrival}
-        for ; ok; parent, ok = parents[parent] {
+        for i := 0; i < 40 && ok;  parent, ok = parents[parent] {
             path = append(path, parent)
+            i += 1
         }
         for i := len(path) - 1; i >= 0; i-- {
             fmt.Println(areas[path[i]].name)
